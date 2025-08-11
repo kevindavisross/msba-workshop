@@ -1,0 +1,208 @@
+---
+title: "MSBA Worskhop: Introduction to Quarto"
+author: "Your name here!"
+date: today
+date-format: "MMM D, YYYY"
+toc: true
+format:
+  html:
+    embed-resources: true
+---
+
+## Quarto documents
+
+Quarto documents contain both text and code cells. 
+If you're familiar with RMarkdown documents, Quarto documents are similar but with more functionality.
+
+Click the **Preview** button which should render this document into a formatted HTML file. 
+Then view this document side-by-side with the HTML output. 
+
+
+## Header
+
+First notice the header at the top of the document that defines the title, author, date, and other options. 
+There are lots of other [options](https://quarto.org/docs/reference/formats/html.html) you can add.
+
+There are multiple [output formats](https://quarto.org/docs/output-formats/all-formats.html), but we'll just focus on HTML for now.
+
+## Markdown
+
+You can use markdown text formatting like **boldface**, *italics*, or creating lists
+
+- Item 1
+- Item 2
+
+## Code cells
+
+Here is a Python code cell.
+
+```{python}
+import pandas as pd
+
+pd.read_csv("https://raw.githubusercontent.com/kevindavisross/msba-workshop/refs/heads/main/cereals.csv")
+
+```
+
+Note `python` in the start of the code cell.
+We'll focus on Python, but Quarto supports other languages, including `r`.
+(You can use multiple languages in the same document.)
+
+## Cell options
+
+There are many options which control how the cell behaves.
+Options are specified by `#|` (hash pipe).
+
+Use `echo` to determine whether or not the code should be shown in the formatted document.
+
+```{python}
+#| echo: false
+
+df = pd.read_csv("https://raw.githubusercontent.com/kevindavisross/msba-workshop/refs/heads/main/cereals.csv")
+
+df
+```
+
+
+We can use code folding to allow the code to be hidden/expanded in the formatted document.
+
+
+```{python}
+#| echo: true
+#| code-fold: true
+
+df["rating"].describe()
+```
+
+[Cell options](https://quarto.org/docs/computations/execution-options.html) can be implemented cell by cell or globally by placing them in the header.
+
+
+## Labels
+
+It is helpful to `label` cells to help navigate the document and to allow for cross-references. 
+Inspect the **OUTLINE** on the left in Positron to see the labeled (and unlabeled cells), as well as the section headings.
+
+```{python}
+#| label: rating-summary
+
+df["rating"].describe()
+```
+
+
+## Figures
+
+We can produce plots as usual and use cell options to add captions.
+
+```{python}
+#| fig-cap: "Histogram of cereal ratings"
+
+df["rating"].plot.hist()
+```
+
+
+Adding a `label` starting with `fig-` to a cell that produces a plot will number the figure and allow us to cross-reference it.
+
+```{python}
+#| label: fig-rating-histogram
+#| fig-cap: "Histogram of cereal ratings"
+
+df["rating"].plot.hist()
+```
+
+
+## Cross references {#sec-cross-ref}
+
+Cross references follow the syntax `@label`.
+
+Since we gave the previous figure a label we can reference it: See @fig-rating-histogram for a histogram of cereal ratings.
+
+We can also cross reference sections; this is @sec-cross-ref.
+(If we're going to cross reference sections, it helps to turn on [section numbering](https://quarto.org/docs/output-formats/html-basics.html#section-numbering) in the header.)
+
+## Equations
+
+Use LaTeX for mathematical notation like $f(x) = e^{-x}$ or equations.
+
+$$
+\Phi(z) = \int_{-\infty}^z \frac{1}{\sqrt{2\pi}} e^{-u^2/2} du
+$$ {#eq-normal-cdf}
+
+Equations can be cross-referenced: @eq-normal-cdf defines the cdf of the standard Normal distribution.
+
+
+## Inline code
+
+Results of computations within cells can be used in the text.
+
+There are `{python} len(df)` observations in the cereals data set.
+
+We can also do computations inline: $2^{11}=$ `{python} 2 ** 11`.
+
+## Callouts
+
+[Callouts](https://quarto.org/docs/authoring/callouts.html) are nice ways to higlight some text.
+
+::: {.callout-warning}
+Each cell `label` must be unique so be careful when copying and pasting cells; duplicate labels will cause the rendering to fail. 
+:::
+
+## Tables
+
+We can create tables from code output; use a label starting with `tab-` to reference, and `tbl-cap` to add a caption.
+
+```{python}
+#| label: tbl-data-subset
+#| tbl-cap: Just a few rows and columns of the data set
+
+df[["name", "calories", "rating"]].head()
+```
+
+
+Now we can reference @tbl-data-subset.
+
+
+## Plotnine
+
+Note that `plotnine` is not included in Anaconda, so we first have to install it using `pip install plotnine`.
+Run this command in the **CONSOLE**.
+You will only need to do this once.
+
+::: {.callout-important}
+Do NOT include commands like `pip install` that install packages in a Quarto document. 
+If someone else runs your document they might end up installing packages that they don't want or that mess up their setup.
+:::
+
+Once `plotnine` is installed we can import it and use it as usual.
+If we had tried to run `from plotnine import ...` before installing the package we would have gotten an error.
+The reason why we didn't get the error when we formatted our document was due to `eval: false` in the code cells below which means that the cells weren't evaluated (run) when we rendered our Quarto document. 
+Observe that there is no plotnine figure in the HTML output.
+
+Now change `eval: false` to `eval: true` in the two cells below, then click the **Preview** button again, and continue comparing the Quarto and HTML documents.
+
+```{python}
+#| eval: false
+
+from plotnine import ggplot, geom_point, aes, stat_smooth, facet_wrap
+```
+
+Note that you can refer to things before they are defined: 
+The code cell that defines @fig-plotnine-example occurs after this reference.
+
+
+```{python}
+#| label: fig-plotnine-example
+#| fig-cap: A plotnine example
+#| eval: false
+
+(ggplot(df,
+        aes(x = "sugars", y = "rating", color = "shelf"))
+ + geom_point()
+ + facet_wrap("~shelf")
+ + stat_smooth(method = "lm")
+ )
+
+```
+
+## Your turn!!!
+
+Experiment with some of the many options and share with your classmates!
+You can look at the [Quarto Tutorial](https://quarto.org/docs/get-started/) and [Quarto Guide](https://quarto.org/docs/guide/) for some ideas.

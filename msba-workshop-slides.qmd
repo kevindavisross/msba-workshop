@@ -1,0 +1,99 @@
+---
+title: "MSBA Math & Coding Workshop"
+author: "Kevin Ross, Statistics"
+format:
+  revealjs: 
+    theme: dracula
+    embed-resources: true
+---
+
+
+## Goal: Brief Refresher/Baseline Exposure
+
+:::: {.columns}
+
+::: {.column width="50%"}
+ - Python
+ - Juypter/Colab
+ - Quarto
+ - Positron
+ - Git/GitHub
+:::
+
+::: {.column width="50%"}
+ - Calculus: Integrals
+ - Calculus: Derivatives
+ - Logarithms
+ - Matrix algebra
+ - Statistics (regression, etc)
+:::
+
+::::
+
+
+## Expectations
+
+- Just the very basics
+- Ask lots of questions...
+  - But I might not answer them (just the very basics)
+  - But should also be time for individual conversations
+- Workshop is optional but if you're here I expect you to participate
+- [Help each other!](https://forms.office.com/Pages/AnalysisPage.aspx?AnalyzerToken=KvZNjUgAVGKoSiMvThCZxnFo90uS9xFt&id=2wING578lUSVNx03nMoq5zdy3BzI595OigysnO88k99UMDBQU09MSURGS1laSk9WMjRTSzgyUUo1OC4u)
+
+
+## Day 1
+
+- [Intro to Colab](https://colab.research.google.com/drive/1qaTWpyJmOHlc-ZFy0atBUuuQi84d2Ly5?usp=sharing)
+- [Intro to Python](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing)
+- [Intro to Pandas](https://colab.research.google.com/drive/1rwzQfrHZ67Sn5njKe1Bf4QpEI0HeblSL?usp=sharing)
+- [Intro to data visualization with Python](https://colab.research.google.com/drive/1L_F4X-W_naa-mWoeogyTbOrPHh5TYYu2?usp=sharing)
+- Install programs: [Anaconda](https://www.anaconda.com/download), [Quarto](https://quarto.org/docs/get-started/), [Positron](https://positron.posit.co/start.html)
+- Intro to Quarto documents
+- Version control/collaboration and Git/Github
+
+
+## Using Colab for data science
+
+- Create a [Google account](https://www.google.com/intl/en-GB/account/about/)
+- [Intro to Colab](https://colab.research.google.com/drive/1qaTWpyJmOHlc-ZFy0atBUuuQi84d2Ly5?usp=sharing)
+- [Intro to Python](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing)
+- [Intro to Pandas](https://colab.research.google.com/drive/1rwzQfrHZ67Sn5njKe1Bf4QpEI0HeblSL?usp=sharing)
+- [Intro to data visualization with Python](https://colab.research.google.com/drive/1L_F4X-W_naa-mWoeogyTbOrPHh5TYYu2?usp=sharing)
+
+
+## Colab is great, but...
+
+- Limited amount of free compute time offered by Google
+- Not much flexibility or control over the documents
+- Limited ability to customize workspace
+  - What if you want to see your text, your code, your plots, your data, your variables, etc, and have tools for debugging, report creation, etc
+- Not great for larger projects or data sets
+- Not great for production quality reports and presentations
+- Not a great workspace for a professional data scientist
+
+
+## Install programs (hopefully)
+
+- Python: [Install Anaconda](https://www.anaconda.com/download)
+- Report/presentation production: [Install Quarto](https://quarto.org/docs/get-started/)
+- Workspace (IDE - Integrated Development Environment): [Install Positron](https://positron.posit.co/start.html)
+- Then open the file `msba-workshop-quarto.qmd` in Positron
+
+
+## Version control/collaboration and Git/GitHub
+
+- You are probably familiar with tools like "track changes" or shared Google docs
+- Colab has similar features
+- Git/GitHub enables version control/collaboration on a much larger scale
+- Create a [GitHub account](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github)
+- Try the [GitHub tutorial](https://docs.github.com/en/get-started/start-your-journey/hello-world)
+- Watch this [video]((https://youtu.be/BCQHnlnPusY?si=NVumTv9G_SphSvMd))
+
+
+## Day 2
+
+- Basics of Logarithms
+- Calculus: Derivatives
+- Calculus: Integrals
+- Matrix algebra
+- Regression
