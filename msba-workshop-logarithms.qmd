@@ -1,0 +1,263 @@
+---
+title: "MSBA Workshop: Brief Review of Logarithms"
+format:
+  html:
+    embed-resources: true
+---
+
+## Logarithms
+
+
+-   A **logarithm** is an exponent.
+-   If $y = b^x$ then $\log_b(y) = x$.
+-   $b$ is called the base.
+-   A logarithm answers the question: "Compute the power ($x$) that a base ($b$) must be raised to in order to return a certain value ($y$)."
+-   For example, since $16 = 4^2$ then $\log_4(16) = 2$, and since $16 = 2^4$ then $\log_{4}(16) = 2$.
+
+
+1.  $\log_{10}(100)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{10}(1000)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{10}(10000)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{10}(10)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{10}(1)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{8}(64)$
+<div style="height: 2cm;"></div>
+
+1.  $\log_{2}(64)$
+<div style="height: 2cm;"></div>
+
+
+-   Any number to the power of 0 is 1: $b^0 = 1$.
+-   So $\log_b(1) = 0$ for any base $b$.
+
+## Logarithms in Python
+
+The libraries `math` and `numpy` include functions for computing logarithms.
+
+```{python}
+import math
+
+math.log(100, 10)
+```
+
+
+```{python}
+math.log(64, 8)
+```
+
+```{python}
+math.log(64, 2)
+```
+
+
+## The number $e$
+
+
+Invest 1 dollar at an annual interest rate of 100%.
+How much money do you have at the end of 1 year if interest is compounded:
+
+
+1.  Annually
+<div style="height: 2cm;"></div>
+
+2.  Semi-annually
+<div style="height: 2cm;"></div>
+
+3.  Monthly
+<div style="height: 2cm;"></div>
+
+4.  Daily
+<div style="height: 2cm;"></div>
+
+5.  $n$ times in the year
+<div style="height: 2cm;"></div>
+
+6.  Continuously
+<div style="height: 2cm;"></div>
+
+$$
+e = \lim_{n\to\infty} \left(1 + \frac{1}{n}\right)^n \approx 2.7183
+$$
+
+
+```{python}
+import numpy as np
+
+np.exp(1)
+```
+
+
+## Exponential function
+
+How much money do you have at the end of 2 years if interest is compounded continuously?
+<div style="height: 2cm;"></div>
+
+```{python}
+import numpy as np
+
+np.exp(2)
+```
+
+Invest 1 dollar at an annual interest rate of 10%.
+How much money do you have at the end of 1 year if interest is compounded:
+
+
+1.  Annually
+<div style="height: 2cm;"></div>
+
+2.  Semi-annually
+<div style="height: 2cm;"></div>
+
+3.  Monthly
+<div style="height: 2cm;"></div>
+
+4.  Daily
+<div style="height: 2cm;"></div>
+
+5.  $n$ times in the year
+<div style="height: 2cm;"></div>
+
+6.  Continuously
+<div style="height: 2cm;"></div>
+
+
+
+
+$$
+e^x = \lim_{n\to\infty} \left(1 + \frac{x}{n}\right)^n
+$$
+
+
+## Natural logarithm
+
+The base-$e$ logarithm is called the **natural logarithm**.
+In math, it is usually denoted $\ln$.
+
+$$
+\ln(x) = \log_e(x)
+$$
+
+
+However, in data science and in most software packages, Python included, $\log$ or `log` refers to "natural log".
+
+```{python}
+np.log(np.exp(1))
+```
+
+
+```{python}
+np.log(np.exp(1) ** 2)
+```
+
+```{python}
+np.log(10)
+```
+
+The `numpy` function for base-10 logarithms is `log10`.
+
+```{python}
+np.log10(10)
+```
+
+```{python}
+np.log10(100)
+```
+
+
+
+
+## Log Transformations
+
+Log transformations of variables are common in data science.
+Let's look at the lot area variable from the Ames housing data.
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+df_ames = pd.read_csv("https://raw.githubusercontent.com/kevindavisross/data301/main/data/AmesHousing.txt", sep="\t")
+df_ames
+
+```
+
+```{python}
+df_ames["Lot Area"].plot.hist()
+
+```
+
+There are a few homes with such extreme lot areas that we get virtually no resolution at the lower end of the distribution.
+Over 95% of the observations are in a single bin of this histogram.
+In other words, the distribution of this variable is extremely *skewed*.
+
+One way to improve this histogram is to use more bins.
+But this does not solve the fundamental problem: we need more resolution at the lower end of the scale and less resolution at the higher end.
+One way to spread out the values at the lower end of a distribution and to compress the values at the higher end is to take the logarithm (provided that the values are all positive).
+Log transformations are particularly effective at dealing with data that is skewed to the right.
+
+
+```{python}
+df_ames["log(Lot Area)"] = np.log(df_ames["Lot Area"])
+df_ames[["Lot Area", "log(Lot Area)"]]
+
+```
+
+Remember "log" usually refers to "natural log", and that's what we have computed (`np.log`).
+We could also transform using base-10 log (`np.log10`).
+
+```{python}
+df_ames["log10(Lot Area)"] = np.log10(df_ames["Lot Area"])
+df_ames[["Lot Area", "log(Lot Area)", "log10(Lot Area)"]]
+
+```
+
+These numbers are not very interpretable on their own, but if we make a histogram of these values, we see that the lower end of the distribution is now more spread out, and the extreme values are not as far out on the logarithmic scale.
+
+```{python}
+df_ames["log(Lot Area)"].plot.hist()
+
+```
+
+The effect is the same if we take natural log or base-10 log; the only difference is the scale.
+
+
+```{python}
+df_ames["log10(Lot Area)"].plot.hist()
+
+```
+
+::: {.callout-warning}
+Do NOT interpret symmetric as "good" and skewed as "bad".
+The shape of the data is what it is; there is no right or wrong.
+:::
+
+-   From an analysis perpesctive, the fact that Lot Area was skewed just meant that the histogram---which uses bins of equal width---did not adequately visualize the sample data.
+-   It is often more natural to view values that span multiple orders of magnitude on a logarithmic/multiplicative scale ("how many *times* bigger?") rather than a linear/absolute scale.
+-   Taking a log transformation allows us to differentially zoom in to different ranges of the data, achieving better resolution when the distribution is skewed.
+
+Here is a [graph from the *NY Times*](https://www.nytimes.com/2022/01/06/learning/whats-going-on-in-this-graph-jan-12-2022.html) with GDP per capita on a logarithmic scale.
+
+## Useful properties of logarithms
+
+
+Roughly, logarithms turn multiplication into addition.
+The logarithm of a product is the sum of the logarithms.
+
+$$
+\log_b(xy)  = \log_b(x) + \log_b(y)
+$$
+
+Roughly, logarithms turn exponentiation (powers) into products.
+$$
+\log_b\left(x^y\right)  = y\log_b(x)
+$$

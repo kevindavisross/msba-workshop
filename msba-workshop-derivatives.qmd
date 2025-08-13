@@ -1,0 +1,169 @@
+---
+title: "MSBA Workshop: Calculus --- A Few Things about Derivatives"
+format:
+  html:
+    embed-resources: true
+---
+
+## Maximixing a Function
+
+Here's a pretty standard calculus problem written by ChatGPT:
+
+
+A company sells a specialized product, and market research shows that the revenue (in thousands of dollars) from producing and selling the product for $x$ months is modeled by[^note1]
+
+$$
+f(x) = x^{8}e^{-5x}
+$$
+
+
+
+[^note1]: The factor $x^{8}$ represents the rapid growth in sales during the early stages due to advertising and word-of-mouth. The factor $e^{-5x}$ represents the loss of market interest and increasing competition over time.
+
+At what time $x$ (in months) should the company end its sales campaign to maximize revenue?
+What is the maximum revenue (in thousands of dollars)?
+
+Note: We will see a very similar problem in a probability/statistics context in GSB 518.
+
+1.  How you should you *first* try to solve this problem?
+<div style="height: 4cm;"></div>
+
+
+1.  What is the general idea of the calculus method for solving such a problem?
+(Don't do it yet.)
+<div style="height: 4cm;"></div>
+
+
+1.  Plot $\log f(x)$.
+What do you notice about where the maximum occurs?
+<div style="height: 4cm;"></div>
+
+
+1.  Write an expression for $\log f(x)$.
+Which would you rather differentiate: $f(x)$ or $\log f(x)$?
+<div style="height: 4cm;"></div>
+
+
+1.  Use calculus to find $x^*$ that maximizes $f(x)$.
+<div style="height: 4cm;"></div>
+
+
+1.  What is the maximum value of $f(x)$?
+<div style="height: 4cm;"></div>
+
+
+-   A derivative is usually interpreted as the [slope of the tangent line to a curve](https://www.google.com/search?sca_esv=b510d2a75869389b&rlz=1C1GCEA_enUS1148US1148&sxsrf=AE3TifPXJAS9jFi5V8oX1nQ1XOX4VhjmTw:1755103236960&udm=2&fbs=AIIjpHxU7SXXniUZfeShr2fp4giZ1Y6MJ25_tmWITc7uy4KIeoJTKjrFjVxydQWqI2NcOha3O1YqG67F0QIhAOFN_ob1yXos5K_Qo9Tq-0cVPzex8akBC0YDCZ6Kdb3tXvKc6RFFaJZ5G23Reu3aSyxvn2qD41n-47oj-b-f0NcRPP5lz0IcnVzj2DIj_DMpoDz5XbfZAMcEl5-58jjbkgCC_7e4L5AEDQ&q=derivative+as+slope+of+tangent+to+a+curve&sa=X&ved=2ahUKEwj3ve6HnYiPAxXeGTQIHfm8A3cQtKgLegQIFRAB&biw=1920&bih=945&dpr=1) 
+-   Maximizing a function $f$ usually involves taking its derivative, setting the derivative equal to 0, and solving
+-   By try graphical methods first!
+-   Finding the value $x^*$ which maximizes $f(x)$ is equivalent to finding the value $x^*$ which maximizes $\log f(x)$ (provided that $f(x)>0$ for all $x$ under consideration)
+-   $\log f(x)$ is often easier to differentiate than $f(x)$, especially if $f$ is a product of several terms
+-   For example, we will see in GSB518 that when finding a *maximum likelihood estimator* we usually work with the log-likelihood function rather than the likelihood function itself.
+
+## Derivative of Exponential and Logarithmic Functions
+
+The derivative of $e^x$ is itself
+
+$$
+\frac{d}{dx} e^x = e^x
+$$
+
+The derivative of $\log(x)$ is $1/x$
+
+$$
+\frac{d}{dx} \log(x) = \frac{1}{x}
+$$
+
+
+## Derivatives in Python
+
+```{python}
+from sympy import symbols, diff, exp
+
+# Define the variable
+x = symbols('x')
+
+# Define the function
+f = x ** 8 * exp(5 * x)
+
+# Partial derivative with respect to x
+diff(f, x)
+```
+
+
+## Partial Derivatives
+
+-   For a function of multiple variables, we can compute *partial derivatives*.
+-   To compute the partial derivative with respect to one variable, treat all other variables like constants
+
+### Example
+
+$$
+f(x, y) = x^5 y^2
+$$
+
+1.   If $y = 1$, what is the derivative of $f$ with respect to $x$?
+<div style="height: 4cm;"></div>
+
+1.   If $y = 2$, what is the derivative of $f$ with respect to $x$?
+<div style="height: 4cm;"></div>
+
+1.   If $y = 3$, what is the derivative of $f$ with respect to $x$?
+<div style="height: 4cm;"></div>
+
+1.   For general $y$, what is the partial derivative of $f$ with respect to $x$?
+<div style="height: 4cm;"></div>
+
+1.  What is the partial derivative of $f$ with respect to $y$?
+<div style="height: 4cm;"></div>
+
+
+### Exercise
+
+$$
+f(x, y, z) = e^x y^3 + 2 z^4
+$$
+
+1.  Find the partial derivative of $f$ with respect to $x$.
+<div style="height: 4cm;"></div>
+
+1.  Find the partial derivative of $f$ with respect to $y$.
+<div style="height: 4cm;"></div>
+
+1.  Find the partial derivative of $f$ with respect to $z$.
+<div style="height: 4cm;"></div>
+
+
+## Partial Derivatives in Python
+
+```{python}
+from sympy import symbols, diff, exp
+
+# Define the variable
+x = symbols('x')
+y = symbols('y')
+z = symbols('z')
+
+# Define the function
+f = exp(x) * y ** 3 + 2 * z ** 4
+
+# Partial derivative with respect to x
+diff(f, x)
+```
+
+```{python}
+# Partial derivative with respect to y
+diff(f, y)
+```
+
+
+```{python}
+# Partial derivative with respect to z
+diff(f, z)
+```
+
+
+## Online Derivative Tools
+
+-   [WolframAlpha](https://www.wolframalpha.com/calculators/derivative-calculator/)
+-   [Symbolab](https://www.symbolab.com/solver/derivative-calculator)
+-   [Desmos](https://www.desmos.com/calculator/s8chubzgal)

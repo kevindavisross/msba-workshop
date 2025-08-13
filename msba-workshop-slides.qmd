@@ -95,5 +95,16 @@ format:
 - Basics of Logarithms
 - Calculus: Derivatives
 - Calculus: Integrals
-- Matrix algebra
 - Regression
+- Matrix algebra
+
+
+## OMG I have to learn/remember all this stuff
+
+::: {.incremental}
+- BUT
+- Usually just very fundamental things
+- Seeing it now, still have time to brush up before you really need it in courses
+- Rely on software to compute
+- Help each other
+:::
