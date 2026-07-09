@@ -13,7 +13,9 @@ format:
 :::: {.columns}
 
 ::: {.column width="50%"}
+### Day 1 (Coding)
  - Python
+ - Data wrangling and visualization
  - Juypter/Colab
  - Quarto
  - Positron
@@ -21,11 +23,12 @@ format:
 :::
 
 ::: {.column width="50%"}
+### Day 2 (Math)
+ - Logarithms
  - Calculus: Integrals
  - Calculus: Derivatives
- - Logarithms
+ - Statistics (mostly regression)
  - Matrix algebra
- - Statistics (regression, etc)
 :::
 
 ::::
@@ -34,31 +37,22 @@ format:
 ## Expectations
 
 - Just the very basics
-- Ask lots of questions...
-  - But I might not answer them (just the very basics)
+- You should ask lots of questions...
+  - But I might not answer some questions (to keep to the very basics)
   - But should also be time for individual conversations
 - Workshop is optional but if you're here I expect you to participate
-- [Help each other!](https://forms.office.com/Pages/AnalysisPage.aspx?AnalyzerToken=KvZNjUgAVGKoSiMvThCZxnFo90uS9xFt&id=2wING578lUSVNx03nMoq5zdy3BzI595OigysnO88k99UMDBQU09MSURGS1laSk9WMjRTSzgyUUo1OC4u)
+- [Work together! Help each other!](https://forms.office.com/Pages/AnalysisPage.aspx?AnalyzerToken=KvZNjUgAVGKoSiMvThCZxnFo90uS9xFt&id=2wING578lUSVNx03nMoq5zdy3BzI595OigysnO88k99UMDBQU09MSURGS1laSk9WMjRTSzgyUUo1OC4u)
+- [Zoom check in times](https://calpoly.zoom.us/j/7097363326) at 11:00, 12:00, 2:00, 2:45; about 10 minutes each
 
 
-## Day 1
+## Day 1 Morning: Using Colab for Data Science
 
-- [Intro to Colab](https://colab.research.google.com/drive/1qaTWpyJmOHlc-ZFy0atBUuuQi84d2Ly5?usp=sharing)
-- [Intro to Python](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing)
-- [Intro to Pandas](https://colab.research.google.com/drive/1rwzQfrHZ67Sn5njKe1Bf4QpEI0HeblSL?usp=sharing)
-- [Intro to data visualization with Python](https://colab.research.google.com/drive/1L_F4X-W_naa-mWoeogyTbOrPHh5TYYu2?usp=sharing)
-- Install programs: [Anaconda](https://www.anaconda.com/download), [Quarto](https://quarto.org/docs/get-started/), [Positron](https://positron.posit.co/start.html)
-- Intro to Quarto documents
-- Version control/collaboration and Git/Github
+1.  Create a [Google account](https://www.google.com/intl/en-GB/account/about/)
+1.  [Intro to Colab](https://colab.research.google.com/drive/1qaTWpyJmOHlc-ZFy0atBUuuQi84d2Ly5?usp=sharing)
+1.  [Intro to Python](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing)
+1.  [Intro to Pandas](https://colab.research.google.com/drive/1rwzQfrHZ67Sn5njKe1Bf4QpEI0HeblSL?usp=sharing)
+1.  [Intro to data visualization with Python](https://colab.research.google.com/drive/1L_F4X-W_naa-mWoeogyTbOrPHh5TYYu2?usp=sharing)
 
-
-## Using Colab for data science
-
-- Create a [Google account](https://www.google.com/intl/en-GB/account/about/)
-- [Intro to Colab](https://colab.research.google.com/drive/1qaTWpyJmOHlc-ZFy0atBUuuQi84d2Ly5?usp=sharing)
-- [Intro to Python](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing)
-- [Intro to Pandas](https://colab.research.google.com/drive/1rwzQfrHZ67Sn5njKe1Bf4QpEI0HeblSL?usp=sharing)
-- [Intro to data visualization with Python](https://colab.research.google.com/drive/1L_F4X-W_naa-mWoeogyTbOrPHh5TYYu2?usp=sharing)
 
 
 ## Colab is great, but...
@@ -72,12 +66,20 @@ format:
 - Not a great workspace for a professional data scientist
 
 
-## Install programs (hopefully)
 
-- Python: [Install Anaconda](https://www.anaconda.com/download)
-- Report/presentation production: [Install Quarto](https://quarto.org/docs/get-started/)
-- Workspace (IDE - Integrated Development Environment): [Install Positron](https://positron.posit.co/start.html)
-- Then open the file `msba-workshop-quarto.qmd` in Positron
+## Day 2 Afternoon: Setting up your Workspace
+
+
+1.  Install programs (hopefully!):
+    -   [Anaconda](https://www.anaconda.com/download)
+    -   [Quarto](https://quarto.org/docs/get-started/)
+    -   [Positron](https://positron.posit.co/start.html)
+    -   [Git](https://git-scm.com/)
+1.  Intro to Quarto documents and Positron
+1.  Version control/collaboration and Git/Github
+
+
+
 
 
 ## Version control/collaboration and Git/GitHub
@@ -87,14 +89,31 @@ format:
 - Git/GitHub enables version control/collaboration on a much larger scale
 - Create a [GitHub account](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github)
 - Try the [GitHub tutorial](https://docs.github.com/en/get-started/start-your-journey/hello-world)
-- Watch this [video]((https://youtu.be/BCQHnlnPusY?si=NVumTv9G_SphSvMd))
+- Watch this [video](https://www.youtube.com/watch?v=BCQHnlnPusY)
 
 
-## Day 2
+
+## Activity: From Colab to GitHub
+
+- Take a notebook you used in Colab, keep working on it locally, and share it like a real project
+- Follow along: `msba-workshop-activity-colab-to-github.qmd`
+  1. Download a Colab notebook as `.ipynb`
+  2. Open and edit it in Positron
+  3. Render it to HTML with Quarto (`quarto render`)
+  4. Create a GitHub repository
+  5. Upload both the `.ipynb` and `.html` files
+
+
+## Day 2 Morning: Just a Little Calculus
 
 - Basics of Logarithms
 - Calculus: Derivatives
 - Calculus: Integrals
+
+
+## Day 2 Afternoon: Just a Little Statistics and Matrix Algebra
+
+- World Cup
 - Regression
 - Matrix algebra
 
@@ -105,6 +124,6 @@ format:
 - BUT
 - Usually just very fundamental things
 - Seeing it now, still have time to brush up before you really need it in courses
-- Rely on software to compute
-- Help each other
+- Rely on software to compute; focus on concepts
+- Work together!!! Help each other!!!
 :::

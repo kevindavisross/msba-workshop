@@ -1,0 +1,421 @@
+---
+title: "MSBA Workshop: Setting Up Your Data Science Environment"
+author: "Kevin Ross, Statistics (with help from Claude)"
+date: today
+date-format: "MMM D, YYYY"
+toc: true
+format:
+  html:
+    embed-resources: true
+    number-sections: true
+---
+
+## Overview
+
+We're installing four separate programs, in this order:
+
+1.  **Anaconda** --- installs Python itself, plus the scientific/data packages we'll use (`pandas`, `numpy`, `scikit-learn`, etc.) and `conda`, a tool for managing Python installations ("environments").
+2.  **Quarto** --- a command-line tool that turns `.qmd` documents (text + code) into formatted reports, like the one you're reading now.
+3.  **Positron** --- the IDE (Integrated Development Environment): the actual window/workspace where you'll write code, run it, see plots, and edit `.qmd` and `.ipynb` files.
+4.  **Git** --- the version-control tool that lets you save and share your work via GitHub.
+
+Install them **in this order**, and restart your computer once everything is installed (this avoids most of the "it says it's installed but nothing works" problems).
+
+::: {.callout-tip}
+Never used a terminal before? Skip ahead to @sec-terminal-intro to get oriented, then come back here --- most of the steps below involve typing a command into one.
+:::
+
+::: {.callout-important}
+If you have **any previous version** of Anaconda, Miniconda, or Python installed (from a previous class or install attempt), see @sec-clean-slate before you install anything. Multiple Python installations on the same computer is the single biggest source of confusing errors in this whole process.
+:::
+
+## If you get stuck: the five most common problems {#sec-top-problems}
+
+With ~30 people installing software on all kinds of laptops, something will go wrong for *someone*. In practice, nearly every problem people hit falls into one of these five buckets. Check this list first before diving into the detailed troubleshooting tables in each section below.
+
+1.  **You have more than one Python/conda on your computer, and the wrong one is being used.** This is by far the most common root cause of everything from "conda not recognized" to "I installed pandas but it says it's not there." See @sec-check-path.
+2.  **You typed a command right after installing something, in a terminal that was already open.** Terminals only see updates (new PATH entries, new commands) that existed when they were *opened*. Close the terminal (or all of Positron) completely and reopen it. This alone fixes a large fraction of "command not found" errors.
+3.  **You ran a package-install command in the Console instead of the Terminal** in Positron. These look similar but are different environments --- see @sec-console-terminal.
+4.  **Positron has the wrong (or no) interpreter selected**, so it can't find pandas/numpy/etc. even though Anaconda installed them fine. Check the interpreter picker, top-right of the Positron window.
+5.  **You're on Windows and used regular Command Prompt/PowerShell instead of a shell that knows about Anaconda.** If you checked the PATH box in Step 1 (recommended below) this shouldn't happen, but if you skipped that step, use Anaconda Prompt instead, or `conda init` your shell of choice.
+
+If none of these match, use @sec-ai-debugging to work through the exact error message.
+
+## Using a terminal {#sec-terminal-intro}
+
+These instructions frequently say things like "open a terminal and run `conda --version`." If that sentence already makes sense to you, skip this section. If not, here's what it means.
+
+**What a terminal is.** Instead of clicking icons and buttons, a terminal is a plain text window where you type a command (like `conda --version`) and press Enter, and the computer prints back text output --- a version number, an error message, a list of files, whatever the command produces. It's a normal, standard way to interact with a computer, not something reserved for "hackers." You'll use one constantly in this workshop and in your courses: installing packages, rendering Quarto documents, and using Git can all happen through typed commands.
+
+**Opening a terminal on its own (outside any other program):**
+
+-   **Windows:** after you install Anaconda in Step 1, search the Start Menu for **"Anaconda Prompt"** and open that --- it's a terminal window pre-configured to know about your Python install. Plain **Command Prompt** or **PowerShell** (also searchable from the Start Menu) are terminals too, and will work the same way *if* you check the PATH box in Step 1 (see below).
+-   **Mac:** press **Cmd+Space**, type "Terminal," and press Enter. (It lives in Applications > Utilities if you ever want to find it by clicking instead.)
+
+**Opening a terminal inside Positron (what you'll use most of the time):** Positron has a **Terminal** tab/panel, usually docked at the bottom of the window. If you don't see it, use the menu **Terminal > New Terminal**, or open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P) and run **"Terminal: Create New Terminal."** This is functionally the same thing as opening a terminal on its own --- just embedded in the IDE, and already pointed at your current project folder so you don't have to navigate there yourself.
+
+::: {.callout-note}
+Positron also has a separate panel called the **Console**, which looks similar but behaves very differently --- there's a dedicated section on that distinction below (@sec-console-terminal). For now, just know "terminal" and "console" are not the same thing.
+:::
+
+**A few habits that will save you confusion later:**
+
+-   You can only type on the current, bottommost line --- you can't click into the middle of earlier output to edit it.
+-   Commands are picky about exact spelling, spacing, and capitalization.
+-   If nothing seems to be happening after you press Enter, it might just be running (e.g., installing something can take a minute) --- give it a bit before assuming it's frozen.
+-   Closing and reopening a terminal is a legitimate, common fix for "it doesn't recognize this command anymore" --- a terminal only knows about settings that existed at the moment it was opened. You'll see this tip repeated throughout this guide.
+
+## Before you start: check for previous installs {#sec-clean-slate}
+
+Old installs don't just sit there harmlessly --- they can silently get picked up *instead of* the new one, which causes confusing bugs like "I installed pandas but Python says it doesn't exist" or "conda: command not recognized" right after installing.
+
+**Do you have a previous Anaconda or Miniconda install?**
+
+-   **Windows:** Open the Start Menu and search for "Anaconda" or "Miniconda." If you see it, or if `C:\Users\<you>\anaconda3` or `C:\Users\<you>\miniconda3` exists, you have a previous install.
+-   **Mac:** Check if `/opt/anaconda3` or `~/anaconda3` (or `miniconda3`) exists in Finder (you may need Cmd+Shift+. to show hidden files), or open Terminal and run `ls ~ /opt` and look for `anaconda3`/`miniconda3`.
+
+If you find one, **uninstall it cleanly first** rather than installing on top of it:
+
+-   **Windows:** Settings > Apps > search "Anaconda" > Uninstall. This runs the official uninstaller.
+-   **Mac:** Open Terminal and run:
+    ```{.bash filename="Terminal"}
+    ~/anaconda3/uninstall.sh
+    ```
+    (or `sudo -E /opt/anaconda3/uninstall.sh` if it was installed for all users; substitute `miniconda3` if that's what you have).
+
+If it's a very old install and the uninstaller itself is missing or fails, it's fine to just delete the folder (`anaconda3`/`miniconda3`) and, on Mac, also delete `~/.condarc` and `~/.conda` if they exist. Don't worry about being surgical here --- a fresh, clean install is much easier to debug than a half-removed old one.
+
+### Check what's actually on your PATH {#sec-check-path}
+
+Uninstalling a program doesn't always clean up everything it added to your system --- old entries in your `PATH` (the list of folders your computer searches for commands like `python` or `conda`), or old shell startup files, can stick around and get picked up *instead of* your new install, even though the old program is gone. This is worth checking now, and again anytime `conda`/`python`/`pip` seem to be doing something unexpected later.
+
+**Windows:** in Anaconda Prompt, PowerShell, or Positron's Terminal, run:
+
+```{.bash filename="Terminal"}
+where conda
+where python
+```
+
+This lists *every* matching program found on your PATH, in the order they'd actually be used (the top one wins). If you see more than one, and any of them point to a folder that no longer exists or an old class's install, that's a stale entry. To remove it: open the Start Menu, search **"Edit the system environment variables"** > **Environment Variables** button > find **Path** under "User variables" (and "System variables") > **Edit** > select and **Delete** any old `anaconda3`/`miniconda3` entries > OK out of all the dialogs > restart your terminal (or your computer, to be safe).
+
+**Mac:** in Terminal, run:
+
+```{.bash filename="Terminal"}
+which -a conda
+which -a python python3
+```
+
+If you see multiple hits, check `~/.zshrc` and `~/.bash_profile` (or `~/.bashrc`) for old lines mentioning `conda init` or a path to an old `anaconda3`/`miniconda3` folder, and delete those lines if the folder they point to no longer exists.
+
+::: {.callout-tip}
+You don't need to memorize any of this --- if something is behaving strangely later in the workshop (wrong package versions, "command not found" after you're sure you installed something), come back to this section and run these commands to see what's actually being used.
+:::
+
+## Step 1: Install Anaconda
+
+Go to [anaconda.com/download](https://www.anaconda.com/download). You'll be prompted to enter an email to "get your download," but there is a **"skip registration"** link/button if you'd rather not --- either way is fine, and it's free for students.
+
+::: {.callout-note}
+## Why is it asking me to sign up / agree to terms? Do I have to pay?
+No. Anaconda is free for individuals and for students/researchers. The sign-up prompt is not a paywall, and you can skip it. You may also see a one-time terms-of-service prompt the first time you run `conda` --- that's normal, just accept it.
+:::
+
+### Windows
+
+1.  Download the **Windows 64-Bit Graphical Installer**, and once it's downloaded, **move it out of Downloads is not necessary, but do double-click it directly** rather than running it from a zipped/Favorites location (installs from unusual locations can fail with permission errors).
+2.  Click through the welcome screen and accept the license agreement.
+3.  **Install for:** choose **"Just Me (recommended)"**, not "All Users" (the latter requires admin rights and installs system-wide, which we don't need).
+4.  **Destination folder:** the default is fine. Avoid picking a folder path with spaces or unusual characters if you customize it.
+5.  **Advanced Installation Options** --- this is the screen that causes the most confusion:
+    -   ☑ *"Add Anaconda3 to my PATH environment variable"* --- **check this one, despite the installer calling it "not recommended."** See the note below for why.
+    -   ☑ *"Register Anaconda3 as my default Python 3.x"* --- **check this one too.** It makes it much easier for Positron (and other tools) to automatically find your Python installation later.
+6.  Click Install and let it finish (this takes a few minutes and installs several GB of packages).
+
+::: {.callout-note}
+## Why check the PATH box, when Anaconda itself says not to?
+Anaconda's own installer defaults to *unchecked* to avoid Anaconda's Python silently overriding some *other* Python a developer already has set up for other work. If this is your first Python install, that risk doesn't apply to you. What matters more for this workshop is that Positron's **Terminal** panel (where you'll run `pip install`, `quarto render`, etc. --- see @sec-console-terminal) is just a plain shell (PowerShell, cmd, or Git Bash, depending on your setup), and it can only find `python`/`conda`/`pip` automatically if they're on your PATH. Without this checked, those commands will work in Anaconda Prompt but may fail with "not recognized" in Positron's Terminal --- especially in Git Bash. Checking this box avoids that entirely.
+
+If you already unchecked it and things are working fine (e.g. because Positron auto-detected your interpreter), you don't need to reinstall --- just know this box is the fix if you later hit "conda/python/pip is not recognized" inside Positron's Terminal specifically.
+:::
+
+**Verify it worked:** open the Start Menu, search for and open **"Anaconda Prompt"** (not the regular Command Prompt or PowerShell). You should see a prompt starting with `(base)`. Type:
+
+```{.bash filename="Anaconda Prompt"}
+conda --version
+python --version
+```
+
+Both should print version numbers with no errors. Then open a **plain** PowerShell or Command Prompt window (not Anaconda Prompt) and run the same two commands --- if you checked the PATH box, these should also work here, which is exactly what makes Positron's Terminal work later.
+
+### Mac
+
+::: {.callout-warning}
+## Apple Silicon vs. Intel Mac
+If your Mac has an M1/M2/M3/M4 chip (anything from late 2020 onward), download the **Apple Silicon (arm64)** installer. If it's an older Intel Mac, download the **Intel (x86_64)** installer. Not sure which you have? Click the Apple menu (top-left) > **About This Mac** and check the chip name. As of August 2025, Anaconda no longer builds new packages for Intel Macs, so if you're on an Intel Mac, expect that some packages may lag behind or need `pip` as a fallback later --- this is unlikely to matter for this workshop, but worth knowing.
+:::
+
+1.  Download the **`.pkg` graphical installer** for your chip type.
+2.  Double-click it, click through the Introduction and Read Me screens, and agree to the license.
+3.  Choose **"Install for me only"** if given the option (default location is `/opt/anaconda3` or inside your home folder).
+4.  Click Install. macOS may prompt for your Mac's login password --- that's expected.
+5.  If macOS blocks the installer with a "cannot be opened because it is from an unidentified developer" message, go to **System Settings > Privacy & Security**, scroll down, and click **"Open Anyway."**
+
+**Verify it worked:** open **Terminal** (Cmd+Space, type "Terminal"). You should see `(base)` at the start of your prompt (you may need to close and reopen Terminal first). Type:
+
+```{.bash filename="Terminal"}
+conda --version
+python --version
+```
+
+Both should print version numbers with no errors.
+
+### Common Anaconda problems
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `conda` or `python` "is not recognized" in Positron's Terminal or plain PowerShell/cmd, but works in Anaconda Prompt | You didn't check "Add Anaconda3 to my PATH" during install | Rerun the installer, choose "Just Me," and check the PATH box this time (reinstalling over the top is fine); or run `conda init powershell` / `conda init cmd.exe` from Anaconda Prompt as a lighter-weight fix |
+| Same, specifically in **Git Bash** | Git Bash needs either the PATH box checked, or `conda init bash` run once | From Anaconda Prompt, run `conda init bash`, then fully close and reopen Git Bash; or just check the PATH box (simpler, recommended) |
+| `conda`/`python` found, but it's the *wrong one* (old version, or missing packages you just installed) | Multiple Pythons/condas on PATH, old one listed first | Run the diagnostics in @sec-check-path to see which install is actually being used, and remove stale entries |
+| Installed before opening a new terminal --- "not recognized" right after install | Terminal was already open when Anaconda finished installing | Close the terminal (or all of Positron) completely and reopen it |
+| Installer fails partway or hangs | Not enough disk space, or install path has spaces | Free up space (Anaconda needs ~5 GB); reinstall to a simpler path |
+| "Already installed" / installer overwrites but things are still broken | Leftover previous install | Uninstall completely (@sec-clean-slate), restart your computer, reinstall |
+| A pop-up about Terms of Service when running `conda` for the first time | Normal, one-time prompt introduced in 2025 | Just accept it |
+| `(base)` doesn't show up in your prompt | You're not in Anaconda Prompt (Windows) or terminal needs reopening (Mac) | See above |
+
+## Step 2: Install Quarto
+
+Go to [quarto.org/docs/get-started/](https://quarto.org/docs/get-started/) and download the installer for your OS (the page auto-detects your OS, but double check). Always grab whatever the **current release** is on that page --- Quarto updates frequently, so don't go looking for a specific version number.
+
+-   **Windows:** run the downloaded `.msi` installer, click through the defaults.
+-   **Mac:** run the downloaded `.pkg` installer, click through the defaults.
+
+**Verify it worked:** close any open terminal windows (important --- an already-open terminal won't see the update) and open a fresh one (Anaconda Prompt on Windows, Terminal on Mac). Run:
+
+```{.bash filename="Terminal / Anaconda Prompt"}
+quarto check
+```
+
+This is the single most useful diagnostic command in this whole setup process --- it checks the Quarto install itself, and also checks whether it can find a working Python + Jupyter installation, and reports version numbers for everything it finds. If it reports a Python version and no errors, you're in good shape. 
+
+### Common Quarto problems
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `quarto: command not found` / "not recognized" | Terminal was open before/during install | Close and reopen your terminal (or Positron) completely |
+| `quarto check` can't find Python/Jupyter | Anaconda not installed yet, or terminal not reopened since installing it | Install Anaconda (Step 1), open a **new** terminal, rerun `quarto check` |
+| `quarto check` finds the *wrong* Python (e.g., a Windows Store stub, not Anaconda) | Multiple Pythons installed on the machine | Make sure you checked "Register Anaconda3 as my default Python" during install (Step 1); as a fallback, uninstall other Python installations, or set the `QUARTO_PYTHON` environment variable to point at Anaconda's `python.exe` |
+| Rendering works from the terminal but not from your IDE, or vice versa | The IDE and terminal are using different Python environments | Make sure Positron's selected interpreter (see Step 3) matches the one `quarto check` reports |
+
+## Step 3: Install Positron
+
+Go to [positron.posit.co](https://positron.posit.co/download.html) and download the installer for your OS (Windows or Mac; choose Apple Silicon vs. Intel for Mac, same as in Step 1). Install with the defaults.
+
+Positron already has Quarto support and a Python/R runtime built in --- you do **not** need to separately install a "Python extension," unlike plain VS Code.
+
+### Do you need to install any extensions?
+
+For everything in this workshop --- Python via Anaconda, `pandas`, `plotnine`, `scikit-learn`, Quarto documents, and Git/GitHub --- **no.** Positron already bundles support for all of it out of the box.
+
+::: {.callout-note}
+`pandas`, `plotnine`, and `scikit-learn` are Python *packages*, not IDE extensions --- you install those with `pip`/`conda` (see @sec-getting-started), not through Positron's Extensions panel.
+
+Positron's extension marketplace is [Open VSX](https://open-vsx.org/), not the Microsoft/VS Code Marketplace, so it doesn't carry every extension you might remember from VS Code. If you go looking for something specific later and can't find it, that's why --- you won't need to for anything in this workshop.
+:::
+
+### Optional: using ChatGPT Edu in Positron
+
+Positron has its own built-in AI assistant ("Posit Assistant"), but its OpenAI option only accepts a **paid, separately-billed API key** --- your Cal Poly **ChatGPT Edu** seat will not work there, so don't bother trying to sign into Posit Assistant with your Edu account.
+
+Instead, OpenAI publishes its own **Codex** extension, which *does* let you sign in with a ChatGPT account --- including Edu --- at no extra cost. This is entirely optional and not required for anything in this workshop, but if you already have free Edu access, here's how to use it in Positron:
+
+1.  Open the **Extensions** panel in Positron (icon in the left sidebar, or Ctrl+Shift+X / Cmd+Shift+X).
+2.  Search for **"Codex"** and install the one published by **OpenAI**.
+3.  When it prompts you to authenticate, choose **"Sign in with ChatGPT"** (not "API key"), and log in with your university ChatGPT Edu account.
+
+A few things worth knowing before you set this up:
+
+-   **Codex is a separate chat/agent panel from Posit Assistant**, not OpenAI plugged into Posit Assistant's chat --- you'll have two different AI panels available, from two different companies, and that's expected.
+-   **ChatGPT Edu access and OpenAI API credits are two different products.** Your Edu seat only works inside ChatGPT-branded surfaces (chat.openai.com, the ChatGPT app, and extensions like Codex that explicitly support signing in with a ChatGPT plan) --- it does not grant free usage of Posit Assistant's API-key-based OpenAI option, or any other tool that asks for an `api.openai.com` key.
+
+
+### First time opening Positron
+
+1.  **Trust the workspace.** The first time you open a folder/project, Positron may ask whether you trust it. Click yes/trust for your own course materials and any folder you downloaded from your instructor or GitHub.
+2.  **Select your Python interpreter.** Look in the **top-right corner** of the window for the interpreter picker (it may say "Select Interpreter" if nothing is chosen yet). Click it and choose the one labeled something like **"Python 3.x (Conda: base)"** or similar --- this is your Anaconda installation. If you don't see it listed, see the troubleshooting table below.
+
+### Console vs. Terminal --- know the difference {#sec-console-terminal}
+
+Positron has two different panels that both look like a place to type commands, but they behave very differently. Mixing them up is one of the most common sources of confusion for beginners.
+
+| | **Console** | **Terminal** |
+|---|---|---|
+| What it is | An interactive Python (or R) session, tied to your selected interpreter | A plain operating-system shell (same as Anaconda Prompt/Terminal) |
+| Use it for | Running code interactively, inspecting variables, quick tests | Installing packages, running `quarto` commands, git commands |
+| Where output goes | Also updates the Variables and Plots panes | Just prints text |
+
+::: {.callout-warning}
+## Always install packages from the Terminal, not the Console
+Running `pip install pandas` in the **Console** can silently install the package somewhere your Terminal (and sometimes your rendered `.qmd` documents) can't see, leading to a confusing `ModuleNotFoundError` even though "it said it installed." **Always install packages from the Terminal tab**, using whichever of these matches how you want to manage packages:
+
+```{.bash filename="Terminal"}
+conda install pandas
+```
+or
+```{.bash filename="Terminal"}
+pip install pandas
+```
+
+Anaconda already includes `pandas`, `numpy`, and `scikit-learn` by default, so you typically only need this for extra packages like `plotnine` (see @sec-getting-started).
+:::
+
+### Common Positron problems
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| Interpreter picker shows no Python options, or only a weird system Python | Anaconda not installed, or Positron hasn't rescanned | Install Anaconda first; reopen Positron; check Command Palette > "Interpreter: Select Session" |
+| `ModuleNotFoundError: No module named 'pandas'` despite installing it | Installed from the Console instead of the Terminal, or wrong interpreter selected | Reinstall from the **Terminal**; double-check the interpreter picker shows "(Conda: base)" |
+| Preview/Render button is missing or grayed out | File isn't saved yet, or isn't recognized as `.qmd` | Save the file first with a `.qmd` extension |
+| Nothing happens when clicking Preview, or it hangs | Quarto or Python not installed/found | Run `quarto check` in the Terminal to diagnose |
+| Positron won't let you run any code in a folder | Workspace not trusted | Click the trust prompt, or check Command Palette > "Workspaces: Manage Workspace Trust" |
+
+## Step 4: Install Git
+
+Git is the version-control tool underneath GitHub --- it's what actually tracks changes and uploads/downloads files; GitHub is just the website that hosts your repositories. You'll get a proper introduction to both later today; for now we just need Git installed and minimally configured.
+
+**Check if you already have it** --- open a terminal and run:
+
+```{.bash filename="Terminal"}
+git --version
+```
+
+If that prints a version number (anything 2.x is fine), you're already set --- skip to "one-time setup" below. Unlike Anaconda, Git doesn't have a "multiple installs silently conflict" problem worth worrying about, so there's no need to uninstall an old one first.
+
+### Windows
+
+Git is usually **not** preinstalled. If `git --version` above failed:
+
+1.  Go to [git-scm.com/download/win](https://git-scm.com/download/win) and download the 64-bit installer.
+2.  Run it and click through with the defaults --- none of the installer screens (PATH handling, default editor, line-ending conversion, credential manager) need to be changed for this workshop.
+3.  This also installs **Git Bash** (a Unix-style terminal) and **Git Credential Manager**, which is what lets `git push` open a browser sign-in later instead of asking for a password.
+
+### Mac
+
+Usually nothing to install. The first time you run `git --version`, macOS may pop up a prompt to install "Command Line Developer Tools" --- click **Install** and wait for it to finish; that's all you need.
+
+**Verify it worked:** close and reopen your terminal, then run `git --version` again.
+
+### One-time setup everyone needs
+
+Regardless of OS, tell Git who you are --- without this, your first commit will fail with a "Please tell me who you are" error:
+
+```{.bash filename="Terminal"}
+git config --global user.name "Your Name"
+git config --global user.email "your_email@calpoly.edu"
+```
+
+Use the email you plan to use for your GitHub account.
+
+### Common Git problems
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `git: command not found` / "not recognized" | Terminal open before install finished, or (Windows) not installed yet | Close/reopen your terminal; on Windows, Git isn't bundled with Anaconda or Positron, so install it above if missing |
+| "Please tell me who you are" error on your first commit | Global `user.name`/`user.email` not set | Run the two `git config --global` commands above |
+| `git push` asks for a password and rejects a real GitHub password | GitHub stopped accepting plain passwords for Git operations in 2021 | Use a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) as the password instead, or use Positron's "Publish to GitHub" button (see `msba-workshop-activity-colab-to-github.qmd`), which signs in via your browser instead |
+
+## Step 5: Getting started with `.qmd` and pandas in Positron {#sec-getting-started}
+
+Once Anaconda, Quarto, Positron, and Git are all installed and `quarto check` runs clean:
+
+1.  Open Positron and use **File > Open Folder** to open the folder containing this workshop's files (not just a single file --- opening the whole folder lets Positron find `cereals.csv` and other data files using relative paths, and lets it detect the right interpreter).
+2.  Confirm your interpreter (top-right) shows your Anaconda/Conda Python.
+3.  Open [msba-workshop-quarto.qmd](msba-workshop-quarto.qmd) --- this walks through the mechanics of `.qmd` documents (code cells, labels, figures, cross-references) using `pandas` on the cereals data set. Click the **Preview** button (top-right of the editor, or Ctrl+Shift+K / Cmd+Shift+K) to render it and compare the source to the rendered output side-by-side.
+4.  To run a single code cell without rendering the whole document (useful while writing/debugging code), click the small "Run Cell" play icon to the left of the cell, or place your cursor in it and press Ctrl+Enter (Cmd+Enter on Mac). This sends the code to the **Console**, where you can also inspect variables in the **Variables** pane.
+5.  When you need a package that isn't already installed (e.g., `plotnine`), open the **Terminal** tab (not Console!) and run `pip install plotnine` --- see the callout in @sec-console-terminal.
+
+**A minimal `.qmd` + pandas example**, if you want to start completely from scratch: create a new file ending in `.qmd`, and add:
+
+````{.markdown filename="my-first-analysis.qmd"}
+---
+title: "My First Analysis"
+format: html
+---
+
+```{{python}}
+import pandas as pd
+
+df = pd.read_csv("cereals.csv")
+df.head()
+```
+````
+
+Save it, click **Preview**, and you should see a rendered HTML page with a table of the first five rows of the cereals data.
+
+### Common `.qmd` + pandas problems
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `FileNotFoundError: cereals.csv` | Positron/Quarto is looking relative to a different folder than where the file lives | Make sure you opened the **folder** (not just the file) in Positron, and that `cereals.csv` is in that same folder |
+| Rendering fails with a Python error, but running the cell in the Console worked fine | Rendering uses a fresh session and reruns *all* cells top to bottom; an earlier cell may be missing, or a variable was only defined interactively | Make sure every variable/import used in a later cell is actually defined by an earlier cell in the file itself |
+| Duplicate label / "cross-reference" error when rendering | Copy-pasted a code cell without updating its `#| label` | Give each cell a unique label |
+| Rendered document looks fine locally, but doesn't recreate when a classmate opens it | You installed a package that they don't have | Never rely on packages beyond what Anaconda ships with, unless you document the `pip install` step for them to run themselves (never *inside* the `.qmd` --- see the callout in [msba-workshop-quarto.qmd](msba-workshop-quarto.qmd)) |
+
+## Using an AI assistant to debug install problems {#sec-ai-debugging}
+
+Tools like ChatGPT, Claude, or Copilot are genuinely good at diagnosing installation errors --- arguably better suited to this than to many coding tasks, since "here's an error message, what's wrong" is a well-worn pattern with lots of precedent for the model to draw on. A few tips to make it actually work:
+
+1.  **Copy the entire error message, exactly as shown --- don't paraphrase or summarize it.** "It says pandas isn't found" gives the AI almost nothing to work with; the actual traceback often contains the one specific detail (a file path, a version number, an exact module name) that matters. Select the text in your terminal and copy it verbatim.
+2.  **Always state your OS** (Windows or Mac, and Apple Silicon vs. Intel if Mac), and **what you were trying to do** (e.g. "installing Anaconda," "rendering a Quarto document in Positron"). Generic advice for "Python not found" differs a lot between Windows and Mac, and an AI that doesn't know your OS will often default to Mac/Linux-flavored instructions.
+3.  **Include the output of a diagnostic command** if you have one --- `where conda` / `which conda`, `conda --version`, `quarto check` --- rather than just describing what happened. These outputs disambiguate "which install is actually in play," which is behind most of the problems in this guide.
+4.  **Work iteratively.** Paste the error, get a suggested fix, try it, and if it doesn't work (or produces a *new* error), paste that back rather than starting a new conversation from scratch --- the AI does better with the accumulated context of what you've already tried.
+
+**Example starting prompt:**
+
+> I'm on Windows 11, setting up Anaconda + Quarto + Positron for a class. I opened Positron's Terminal (not the Console) and ran `pip install plotnine`, and got this exact error:
+>
+> `[paste the full error text here]`
+>
+> Here's what `where python` shows:
+>
+> `[paste the full output here]`
+>
+> What's going on and how do I fix it?
+
+::: {.callout-warning}
+## Sanity-check before running suggested commands
+AI assistants are usually right about install issues, but occasionally suggest something more drastic than necessary (e.g., "just delete your PATH variable and start over," or a command referencing a folder it guessed at rather than one you confirmed exists). Before running anything that deletes files, modifies system settings, or you don't understand, ask it to explain *what the command does and why*, or check with a classmate/instructor. Nothing in this workshop's setup should ever require anything you'd consider "risky" --- if a suggested fix feels like a big hammer for a small problem, that's a sign to ask a follow-up question first.
+:::
+
+## Getting-started tutorials
+
+These are optional, self-paced resources if you want more practice beyond the workshop materials.
+
+**Positron itself**
+
+-   [Positron: First data analysis with Python in a Jupyter Notebook](https://positron.posit.co/tutorial-get-started-ipynb.html) --- official walkthrough of Positron's interface using `pandas`, though in a `.ipynb` notebook rather than `.qmd`
+-   [Positron: Managing Python interpreters](https://positron.posit.co/python-installations.html) --- if the interpreter picker is confusing you
+
+**Quarto itself**
+
+-   [Quarto: Tutorial --- Hello, Quarto (Positron track)](https://quarto.org/docs/get-started/hello/positron.html)
+-   [Quarto: Tutorial --- Computations (Positron track)](https://quarto.org/docs/get-started/computations/positron.html)
+-   [Quarto Guide](https://quarto.org/docs/guide/) --- reference for everything covered in [msba-workshop-quarto.qmd](msba-workshop-quarto.qmd) and beyond
+
+**Python and pandas, if you're starting from zero**
+
+-   [Software Carpentry: Plotting and Programming in Python](https://swcarpentry.github.io/python-novice-gapminder/) --- a thorough, free, no-experience-required intro
+-   [Data Carpentry: Data Analysis and Visualization in Python](https://datacarpentry.github.io/python-ecology-lesson/) --- similar, with more emphasis on `pandas` and real data
+-   [pandas: Getting started tutorials](https://pandas.pydata.org/docs/getting_started/intro_tutorials/) --- official, short, progressive lessons
+-   [pandas: 10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html) --- a fast, official overview once you know the basics
+-   [freeCodeCamp: Learn Python for Data Science -- Full Course for Beginners](https://www.freecodecamp.org/news/learn-python-for-data-science-full-course/) --- long-form video course covering Python fundamentals through pandas
+
+## Quick reference: if something's not working
+
+1.  Close and reopen your terminal/Positron completely (fixes most PATH problems).
+2.  Run `quarto check` and read what it reports.
+3.  Check the interpreter picker (top-right in Positron) --- does it say "(Conda: base)" or similar?
+4.  Install packages from the **Terminal**, never the Console.
+5.  Run `where conda`/`where python` (Windows) or `which -a conda`/`which -a python` (Mac) to see if more than one install is in play (@sec-check-path).
+6.  Paste the exact error into an AI assistant along with your OS and a diagnostic command's output (@sec-ai-debugging).
+7.  If truly stuck, uninstall Anaconda completely (@sec-clean-slate), restart your computer, and reinstall in order: Anaconda, then Quarto, then Positron, then Git.
+8.  Ask a classmate or the instructor --- installation issues are extremely common and rarely mean you did something wrong.

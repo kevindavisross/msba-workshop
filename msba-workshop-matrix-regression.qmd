@@ -1,5 +1,8 @@
 ---
 title: "MSBA Workshop: Linear Regression and Matrix Algebra"
+author: "Kevin Ross"
+date: today
+date-format: "MMM D, YYYY"
 format:
   html:
     embed-resources: true
@@ -257,7 +260,7 @@ $$
 0.1 \times 100  + 0.2 \times 70 + 0.3 \times 80 + 0.4 \times 90 = 84
 $$
 
-This an example of a vector dot product of two vectors with the same length
+This an example of a vector dot product, like a sumproduct, of two vectors with the same length
 
 $$
 \mathbf{x} \cdot \mathbf{y} = \sum_i x_i y_i
@@ -278,10 +281,10 @@ np.dot(x, y)
 ## Matrix
 
 A matrix is a rectangular array of values.
-We often think of a data frame as a matrix with one row for each observation and one column for each variable. For matrix $\mathbf{A}$, $a_{ij}$ denotes the entry in row $i$ and column $j$.
-An $n\times m$ matrix has $n$ rows and $m$ columns.
+We often think of a data frame as a matrix with one row for each observation and one column for each variable. For matrix $\mathbf{A},$ $a_{ij}$ denotes the entry in row $i$ and column $j$.
+An $n\times p$ matrix has $n$ rows and $p$ columns.
 
-A column vector can be considered an $n\times 1$ matrix, and a row vector as a $1\times m$ matrix.
+A column vector can be considered an $n\times 1$ matrix, and a row vector as a $1\times p$ matrix.
 
 A square matrix has the same number of rows and columns, $n\times n$.
 
@@ -289,7 +292,7 @@ A square matrix has the same number of rows and columns, $n\times n$.
 ## Matrix Transpose
 
 To find the transpose of a matrix, flip the rows and columns.
-If $\mathbf{A}$ is an $n\times m$ matrix then $\mathbf{A}^T$ is an $m\times n$ matrix.
+If $\mathbf{A}$ is an $n\times p$ matrix then $\mathbf{A}^T$ is an $p\times n$ matrix.
 
 
 
@@ -356,7 +359,7 @@ This is an example of matrix multiplication.
 
 Two matrices $\mathbf{A}$ and $\mathbf{B}$ can only be multiplied if their dimensions align; the matrix product $\mathbf{A}\mathbf{B}$ can only be computed if the number of columns of $\mathbf{A}$ is the same as the number of rows of $\mathbf{A}$.
 
-If $\mathbf{A}$ is an $n\times m$ matrix and $\mathbf{B}$ is an $m \times o$ matrix then the matrix product $\mathbf{AB}$ is an $n\times o$ matrix where the $ij$ entry is the dot product of the $i$th row of $\mathbf{A}$ and the $j$ column of $\mathbf{B}$
+If $\mathbf{A}$ is an $n\times k$ matrix and $\mathbf{B}$ is an $k \times p$ matrix then the matrix product $\mathbf{AB}$ is an $n\times p$ matrix where the $ij$ entry is the dot product of the $i$th row of $\mathbf{A}$ and the $j$ column of $\mathbf{B}$
 
 
 ```{python}
@@ -404,4 +407,133 @@ $$
 If the inverse exists then it is unique, but some matrices do not have an inverse.
 
 See Wikipedia for an [example](https://en.wikipedia.org/wiki/Invertible_matrix#Examples)
+
+In `numpy`, the inverse of a matrix `A` is computed with `np.linalg.inv(A)`.
+
+
+## The Design Matrix
+
+Now we have enough matrix vocabulary to make sense of
+
+$$
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+$\mathbf{Y}$ is just the column vector of the $n$ observed values of the response variable, e.g. the 2930 `SalePrice` values.
+
+$\mathbf{X}$, called the *design matrix*, has one row per observation and one column per predictor, **plus a column of all 1s for the intercept**.
+For simple linear regression with a single predictor (square footage), $\mathbf{X}$ is $n\times 2$:
+
+$$
+\mathbf{X} =
+\begin{bmatrix}
+1 & x_1\\
+1 & x_2\\
+\vdots & \vdots\\
+1 & x_n
+\end{bmatrix}
+,\qquad
+\boldsymbol{\beta} =
+\begin{bmatrix}
+\beta_0\\
+\beta_1
+\end{bmatrix}
+$$
+
+Multiplying out $\mathbf{X}\boldsymbol{\beta}$ gives a column vector whose $i$th entry is $\beta_0 + \beta_1 x_i$ --- exactly the regression equation for observation $i$, for every observation at once.
+This is the same idea as the weighted-course-average example above, just with a "1" column mixed in to produce the intercept.
+
+The *fitted*/*predicted* values use the estimated coefficients $\boldsymbol{\hat\beta}$ in place of $\boldsymbol\beta$
+
+$$
+\mathbf{\hat{Y}} = \mathbf{X}\boldsymbol{\hat{\beta}}
+$$
+
+and the *least squares* estimates --- the values of $\boldsymbol{\hat\beta}$ that minimize the sum of squared residuals, generalizing the $S(\beta_0,\beta_1)$ from before to any number of predictors --- turn out to have a closed-form matrix solution called the **normal equations**
+
+$$
+\boldsymbol{\hat{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+$$
+
+We won't derive this (it comes from calculus --- take the derivative of $S(\boldsymbol\beta)$ with respect to the vector $\boldsymbol\beta$, set it to $\mathbf{0}$, and solve), but we can check that it works.
+
+
+### Checking the formula: simple linear regression
+
+Let's build $\mathbf{X}$ and $\mathbf{Y}$ for the square-footage example and compute $\boldsymbol{\hat\beta}$ directly with the matrix formula.
+
+```{python}
+X = np.column_stack([
+    np.ones(len(df)),
+    df["Gr Liv Area"]
+])
+
+Y = df["SalePrice"]
+
+beta_hat = np.linalg.inv(X.T @ X) @ X.T @ Y
+beta_hat
+```
+
+Compare this to `sqft_model.intercept_` and `sqft_model.coef_` computed earlier using `scikit-learn`: they match.
+`scikit-learn` isn't doing anything magical --- for ordinary linear regression it's solving the same normal equations under the hood.
+
+
+## Multiple Regression
+
+Nothing about the design matrix or the normal equations above was specific to having just *one* predictor.
+This is the payoff for learning the matrix version: the exact same formula, $\boldsymbol{\hat\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$, works no matter how many columns (predictors) $\mathbf{X}$ has.
+There is no separate "multiple regression formula" to learn --- the slope/intercept shortcut formulas from before only worked for a single predictor, but the matrix formula scales to any number of predictors for free.
+
+Suppose we predict `SalePrice` from *both* `Gr Liv Area` and `Year Built`.
+The design matrix just gets an extra column:
+
+$$
+\mathbf{X} =
+\begin{bmatrix}
+1 & x_{1,1} & x_{1,2}\\
+1 & x_{2,1} & x_{2,2}\\
+\vdots & \vdots & \vdots\\
+1 & x_{n,1} & x_{n,2}
+\end{bmatrix}
+,\qquad
+\boldsymbol{\beta} =
+\begin{bmatrix}
+\beta_0\\
+\beta_1\\
+\beta_2
+\end{bmatrix}
+$$
+
+First with `scikit-learn`:
+
+```{python}
+df_multi = df_ames[["Gr Liv Area", "Year Built", "SalePrice"]]
+
+multi_model = LinearRegression()
+multi_model.fit(
+    X=df_multi[["Gr Liv Area", "Year Built"]],
+    y=df_multi["SalePrice"]
+)
+
+multi_model.intercept_, multi_model.coef_
+```
+
+Now the matrix version, by hand, adding a column for `Year Built` to $\mathbf{X}$:
+
+```{python}
+X_multi = np.column_stack([
+    np.ones(len(df_multi)),
+    df_multi["Gr Liv Area"],
+    df_multi["Year Built"]
+])
+
+Y_multi = df_multi["SalePrice"]
+
+beta_hat_multi = np.linalg.inv(X_multi.T @ X_multi) @ X_multi.T @ Y_multi
+beta_hat_multi
+```
+
+Same answer, same formula, one more column.
+This is one reason why coefficients in multiple regression are interpreted "holding the other variables constant": each $\hat\beta_j$ is estimated jointly with all the others, not one at a time.
+You'll see multiple regression again (and this same matrix notation) in your coursework.
 

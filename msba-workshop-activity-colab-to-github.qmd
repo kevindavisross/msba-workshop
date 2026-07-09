@@ -1,0 +1,140 @@
+---
+title: "MSBA Workshop Activity: From Colab to GitHub"
+author: "Kevin Ross, Statistics"
+date: today
+date-format: "MMM D, YYYY"
+format:
+  html:
+    embed-resources: true
+---
+
+## The activity
+
+By now you've poked around in Colab, and you have Anaconda, Quarto, and Positron installed.
+This activity connects all of it into one small workflow: take something you started in Colab, keep working on it locally in Positron, turn it into a shareable report with Quarto, and post it to GitHub --- roughly the same cycle you'll use for real projects.
+
+You'll end up with two files in a brand-new GitHub repository: the notebook itself (`.ipynb`) and a rendered report (`.html`).
+
+::: {.callout-note}
+If you get stuck on installing/opening things, see `msba-workshop-setup.qmd` first.
+:::
+
+## Step 1: Get a notebook out of Colab
+
+1.  Open the [Intro to Python Colab notebook](https://colab.research.google.com/drive/1xE_nzRruCpovQM_O5_-gXxkF_Hv_HfgC?usp=sharing) (or any other Colab notebook from the workshop --- your choice).
+2.  In Colab, go to **File > Download > Download .ipynb**.
+3.  Note where it lands (usually your **Downloads** folder).
+4.  Create a new, empty folder somewhere sensible (e.g. `colab-activity` in your Documents), and move the downloaded file into it.
+
+::: {.callout-tip}
+Colab often names the download something like `Copy of Intro to Python.ipynb`. Rename it to something short with no spaces, e.g. `intro-to-python.ipynb` --- this will make Step 3 easier since you won't have to quote the filename.
+:::
+
+## Step 2: Open and edit it in Positron
+
+1.  In Positron, **File > Open Folder...** and choose the folder from Step 1.
+2.  Click the `.ipynb` file to open it --- Positron shows it as a notebook (cells with Run buttons), same idea as Colab.
+3.  Make sure the interpreter (top-right) is set to your Anaconda/Conda Python, then use **Run All** to confirm the notebook runs top-to-bottom with no errors.
+4.  Make at least one real edit --- answer one of the embedded questions, add a new code cell, or change something and see what happens. The point is to show this is *your* copy, edited locally.
+5.  Save the file (Ctrl+S / Cmd+S).
+
+::: {.callout-warning}
+Some Colab notebooks include Colab-only code, like `from google.colab import files` or `drive.mount(...)`. These will error out locally since they depend on Colab's environment. It's fine to just delete or skip those specific cells --- they're not something Positron needs to reproduce.
+:::
+
+## Step 3: Render it to HTML with Quarto
+
+Quarto can render a `.ipynb` file directly to HTML --- you don't need to convert it to a `.qmd` first. There are two ways to trigger it; use whichever works on your machine.
+
+::: {.callout-important}
+Either way, Quarto renders the notebook using whatever the cells' outputs **already are on disk** --- by default it does not rerun them. Make sure you've done **Run All** in Positron (Step 2) and saved the file first, or your rendered HTML may be missing outputs or show stale ones.
+:::
+
+**Option A: Terminal command (always works, use this if in doubt)**
+
+1.  Open the **Terminal** tab in Positron (not the Console --- see `msba-workshop-setup.qmd` if you're unsure of the difference).
+2.  Make sure you're in the folder with your notebook, then run (substituting your actual filename):
+
+    ```{.bash filename="Terminal"}
+    quarto render intro-to-python.ipynb --to html
+    ```
+
+3.  This creates a new file, e.g. `intro-to-python.html`, in the same folder.
+
+**Option B: Positron's built-in Preview (newer Positron versions)**
+
+Recent versions of Positron (2026.06 and later) add Quarto rendering directly to the notebook toolbar:
+
+1.  With the `.ipynb` open in Positron's Notebook editor, look for the **"..."** (overflow) menu in the notebook's toolbar.
+2.  Choose **Preview** (renders to the default format and opens it in the Viewer pane) or **Preview Format...** if you want to explicitly pick HTML.
+
+If you don't see this option (older Positron version, or it's just not there for you), don't worry about it --- fall back to Option A, which always works.
+
+Either way, once you have the `.html` file, open it (right-click it in Positron's Explorer and choose to open it, or double-click it in your regular file browser) and check that it looks like a reasonable report of your notebook.
+
+::: {.callout-warning}
+If rendering fails because a cell errors out, fix the notebook first (rerun it in Positron with **Run All** until it works top-to-bottom with no errors), save, then try rendering again.
+:::
+
+## Step 4: Create a GitHub repository
+
+::: {.callout-note}
+Skip this step if you're going to use **Option B** in Step 5 below (Positron's "Publish to GitHub") --- that option creates the repository for you.
+:::
+
+1.  Go to [github.com](https://github.com) and sign in; [create a free account](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github) first if you haven't.
+2.  Click the **+** in the top right > **New repository**.
+3.  Give it a short name, e.g. `intro-python-activity`. Leave it **Public**, and don't check any of the "Initialize this repository with..." boxes --- just click **Create repository**.
+
+## Step 5: Get your files onto GitHub
+
+Three ways to do this --- pick whichever you like. They all end up in the same place.
+
+**Option A: GitHub website (simplest, no extra setup)**
+
+1.  On your new (empty) repository's page from Step 4, click **"uploading an existing file"** (or **Add file > Upload files**).
+2.  Drag both your `.ipynb` and `.html` files into the browser window.
+3.  Scroll down, type a short commit message (e.g. "add intro to python notebook"), and click **Commit changes**.
+
+**Option B: Positron's Source Control panel ("Publish to GitHub")**
+
+Positron has Git built in, including a one-click "publish" flow --- this both creates the repo and uploads your files, so you can skip Step 4 entirely if you use this.
+
+1.  In Positron, open the **Source Control** panel (icon in the left sidebar that looks like a branch).
+2.  If prompted, click **Initialize Repository** for your folder.
+3.  You should see your `.ipynb` and `.html` files listed as changes. Click **Publish to GitHub** (you may be asked to sign in to GitHub the first time --- this opens in your browser).
+4.  Choose a repository name and whether it's public or private, and confirm. Positron creates the GitHub repo and pushes your files in one step.
+
+::: {.callout-tip}
+This option is worth trying on Mac specifically: the terminal option (C, below) can run into a Git password prompt on Mac that's easy to get stuck on, but Positron's Publish flow sidesteps it with a browser sign-in instead.
+
+If **Publish to GitHub** isn't available or isn't working for you, [GitHub Desktop](https://desktop.github.com/) is another no-command-line option --- it's a separate app rather than something built into Positron, but it does the same drag-and-drop-free publish/push with a similar sign-in flow.
+:::
+
+**Option C: Terminal, using `git` commands directly**
+
+This is the command-line version.
+Requires the repository already created in Step 4.
+
+```{.bash filename="Terminal"}
+git init
+git add intro-to-python.ipynb intro-to-python.html
+git commit -m "add intro to python notebook"
+git branch -M main
+git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+git push -u origin main
+```
+
+::: {.callout-warning}
+On the `git push` step, you'll be asked to authenticate with GitHub. On **Windows**, this normally opens a browser sign-in automatically. On **Mac**, you may instead get a username/password prompt in the terminal --- a real GitHub password will **not** work here (GitHub requires a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) instead, as of a few years ago). If you hit this, it's easiest to switch to Option A or B above rather than generating a token mid-workshop.
+:::
+
+## Step 6: Check your work
+
+-   Click on the `.ipynb` file in your repo --- GitHub automatically renders Jupyter notebooks, so you should see your cells and output nicely formatted, right in the browser.
+-   Click on the `.html` file --- GitHub does **not** render HTML files in the browser; it'll just show you the raw HTML source code. That's expected and doesn't mean anything went wrong. (If you ever need to actually *view* a hosted HTML file rendered, that's what GitHub Pages is for --- out of scope for today, but good to know it exists.)
+-   Either way, if both files show up in your repo, you're done!
+
+## Why this matters
+
+You just did a small version of a very common workflow: explore/prototype (Colab), develop for real (Positron), produce a polished, shareable artifact (Quarto), and version/share it (GitHub). Whichever option you picked in Step 5, Option C's `git` commands are worth a second look --- they become much faster than the website or Publish button once you're managing more than a couple of files.

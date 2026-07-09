@@ -1,0 +1,75 @@
+---
+title: "Riemann Sum gif"
+format: html
+---
+
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+# ---- function to integrate ----
+def f(t):
+    return 400 * (t / 60)**5 * (1 - t / 60)**2
+
+a, b = 0, 60
+t_smooth = np.linspace(a, b, 2000)
+y_smooth = f(t_smooth)
+y_max = y_smooth.max()
+
+# ---- number of rectangles per frame ----
+# start coarse, grow quickly at first then more slowly (looks smoother as an animation)
+n_values = np.unique(np.round(np.geomspace(4, 300, 45)).astype(int))
+# hold on the last (finest) frame a little longer
+n_values = np.concatenate([n_values, np.full(10, n_values[-1])])
+
+# ---- set up figure ----
+fig, ax = plt.subplots(figsize=(7, 4.5), dpi=120)
+
+def draw_frame(n):
+    ax.clear()
+
+    # midpoint Riemann sum
+    edges = np.linspace(a, b, n + 1)
+    width = edges[1] - edges[0]
+    mids = (edges[:-1] + edges[1:]) / 2
+    heights = f(mids)
+    area = np.sum(heights * width)
+
+    # curve
+    ax.plot(t_smooth, y_smooth, color='tab:blue', linewidth=2, zorder=3)
+
+    # rectangles
+    ax.bar(mids, heights, width=width, align='center',
+           color='tab:blue', alpha=0.35, edgecolor='white',
+           linewidth=0.6, zorder=2)
+
+    ax.set_xlim(a, b)
+    ax.set_ylim(0, y_max * 1.15)
+    ax.set_xlabel('t')
+    ax.set_ylabel('f(t)')
+    ax.set_title(f'Riemann Sum Approximation of Integral (n = {n} rectangles)')
+
+    ax.text(0.03, 0.92, f'Area ≈ {area:.2f}',
+            transform=ax.transAxes, fontsize=13, fontweight='bold',
+            color='tab:blue',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                      edgecolor='tab:blue', alpha=0.9))
+
+    # clean look: no gray background, minimal spines
+    ax.set_facecolor('white')
+    fig.patch.set_facecolor('white')
+    for spine in ['top', 'right']:
+        ax.spines[spine].set_visible(False)
+
+    return []
+
+anim = animation.FuncAnimation(
+    fig, draw_frame, frames=n_values, blit=False
+)
+
+anim.save('riemann_sums.gif', writer='pillow', fps=2)
+print("done")
+
+```

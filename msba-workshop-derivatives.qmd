@@ -1,5 +1,8 @@
 ---
 title: "MSBA Workshop: Calculus --- A Few Things about Derivatives"
+author: "Kevin Ross"
+date: today
+date-format: "MMM D, YYYY"
 format:
   html:
     embed-resources: true
@@ -58,6 +61,71 @@ Which would you rather differentiate: $f(x)$ or $\log f(x)$?
 -   Finding the value $x^*$ which maximizes $f(x)$ is equivalent to finding the value $x^*$ which maximizes $\log f(x)$ (provided that $f(x)>0$ for all $x$ under consideration)
 -   $\log f(x)$ is often easier to differentiate than $f(x)$, especially if $f$ is a product of several terms
 -   For example, we will see in GSB518 that when finding a *maximum likelihood estimator* we usually work with the log-likelihood function rather than the likelihood function itself.
+
+
+```{python}
+#| label: fig-maximizing-function
+#| echo: false 
+#| fig-cap: f(x) and its log are maximized at the same x
+
+import numpy as np
+import pandas as pd
+from plotnine import *
+
+def f(x):
+    return x**8 * np.exp(-5 * x)
+
+x = np.linspace(0.5, 4, 500)
+x_max = 8 / 5
+y_max = f(x_max)
+
+df1 = pd.DataFrame({'x': x, 'y': f(x)})
+df2 = pd.DataFrame({'x': x, 'y': np.log(f(x))})
+
+p1 = (ggplot(df1, aes('x', 'y'))
+      + geom_line(color='tab:blue', size=1)
+      + geom_segment(aes(x=x_max, xend=x_max, y=-np.inf, yend=y_max), linetype='dotted', color='black')
+      + labs(y='f(x)'))
+
+p2 = (ggplot(df2, aes('x', 'y'))
+      + geom_line(color='tab:red', size=1)
+      + geom_segment(aes(x=x_max, xend=x_max, y=-np.inf, yend=np.log(y_max)), linetype='dotted', color='black')
+      + labs(y='ln(f(x))'))
+
+p1 / p2   # stack vertically
+```
+
+
+## A Few Derivative Rules
+
+
+The derivative of a constant is 0
+
+$$
+\frac{d}{dx}c = 0 
+$$
+
+Derivative of a polynomial
+
+$$
+\frac{d}{dx} x^n = n x^{n-1} 
+$$
+
+Derivative of a sum is the sum of derivatives
+
+$$
+(f+g)' = f' + g'
+$$
+
+Chain rule
+
+$$
+\frac{d}{dx} f(g(x)) = f'(g(x))g'(x)
+$$
+
+
+There are many more [derivative rules](https://en.wikipedia.org/wiki/Differentiation_rules).
+
 
 ## Derivative of Exponential and Logarithmic Functions
 

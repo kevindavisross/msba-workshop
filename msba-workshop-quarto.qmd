@@ -15,15 +15,17 @@ Quarto documents contain both text and code cells.
 If you're familiar with RMarkdown documents, Quarto documents are similar but with more functionality.
 
 Click the **Preview** button which should render this document into a formatted HTML file. 
-Then view this document side-by-side with the HTML output. 
+Then view this QMD document side-by-side with the HTML output. 
 
 
 ## Header
 
-First notice the header at the top of the document that defines the title, author, date, and other options. 
+First notice the header at the top of the document that defines the title, author, date, and other options.
 There are lots of other [options](https://quarto.org/docs/reference/formats/html.html) you can add.
 
 There are multiple [output formats](https://quarto.org/docs/output-formats/all-formats.html), but we'll just focus on HTML for now.
+
+Look for `embed-resources: true` in the header. By default, when Quarto renders a document with plots, styling, etc., it saves those pieces (images, CSS, JavaScript) as *separate files* in a companion folder next to your `.html` file, and the HTML just points to them. `embed-resources: true` instead packs everything --- every image, every bit of styling --- directly *inside* the single `.html` file. That's why every `.html` file in this workshop has it turned on: it means the rendered file is fully self-contained, so you can email it, upload it to Canvas, or send it to a classmate as one file and it'll display correctly on their end, with nothing else needed alongside it. We'll see exactly what goes wrong without it a bit later, once we have an actual plot to test with.
 
 ## Markdown
 
@@ -109,6 +111,24 @@ df["rating"].plot.hist()
 ```
 
 
+## Your turn: what does `embed-resources` actually do?
+
+Now that we have a plot in the document, let's see what `embed-resources` was doing for us.
+
+1.  In the header at the top of this document, change `embed-resources: true` to `embed-resources: false`.
+2.  Click **Preview** to re-render.
+3.  Look in the file browser next to your `.qmd` file --- you should notice a new folder appeared (named something like `msba-workshop-quarto_files`). This is where the plot images (and the page's styling) now live *separately* from the HTML file.
+4.  Copy just the `.html` file (not the new folder!) to a different location on your computer --- your Desktop, for example.
+5.  Open that copied file directly (double-click it, or open it in a browser).
+6.  Look at where the plots should be. What do you see?
+
+::: {.callout-tip collapse="true"}
+## What you should see (click to expand)
+Broken image icons where the plots should be, and the page may look unstyled too. The copied `.html` file still contains `<img>` tags pointing at the plot images, but it points to them using a relative path into that `_files` folder --- and since you only copied the `.html` file, that folder (and the images inside it) isn't there anymore. The file wasn't actually self-contained; it just looked that way as long as it stayed next to its companion folder.
+
+Now change `embed-resources` back to `true`, re-render, and repeat steps 4--6. This time the plots should show up fine, because the images are embedded directly inside the `.html` file itself --- there's nothing else it depends on.
+:::
+
 ## Cross references {#sec-cross-ref}
 
 Cross references follow the syntax `@label`.
@@ -162,12 +182,16 @@ Now we can reference @tbl-data-subset.
 
 ## Plotnine
 
-Note that `plotnine` is not included in Anaconda, so we first have to install it using `pip install plotnine`.
-Run this command in the **CONSOLE**.
-You will only need to do this once.
+Note that `plotnine` is not included by default when you install Anaconda, so we first have to install it using `pip install plotnine` (`conda install plotnine` also works, if you'd rather use `conda`).
+Run this command in the **TERMINAL** not the console.
+You will only need to do this once per Python environment.
+
+::: {.callout-tip}
+This installs into whichever Python environment your Terminal is currently using. If you have more than one Python installation, make sure that matches the interpreter Positron is using to run your code (the one shown in the picker, top-right) --- otherwise you can "successfully install" plotnine and still get a `ModuleNotFoundError` when you try to import it. See `msba-workshop-setup.qmd` if this happens.
+:::
 
 ::: {.callout-important}
-Do NOT include commands like `pip install` that install packages in a Quarto document. 
+Do NOT include commands like `pip install` that install packages in a Quarto document.
 If someone else runs your document they might end up installing packages that they don't want or that mess up their setup.
 :::
 
@@ -206,3 +230,5 @@ The code cell that defines @fig-plotnine-example occurs after this reference.
 
 Experiment with some of the many options and share with your classmates!
 You can look at the [Quarto Tutorial](https://quarto.org/docs/get-started/) and [Quarto Guide](https://quarto.org/docs/guide/) for some ideas.
+
+Also get some practice exploring Positron - run some code cells in the QMD individually, type some commands in the CONSOLE, look at different panes and settings, etc.
